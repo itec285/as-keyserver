@@ -59,16 +59,35 @@ class GetModules_Meta(Resource):
 
 class GetKey_Meta(Resource):
 	def get(self,store_code, serialNumber, external_IPAddress, internal_IPAddress):
+		print ('\n\n\n#######    NEW KEY REQUEST - ' +  str(datetime.datetime.now()) + '    #######')
+		
 		#Connect to the database
 		conn = e.connect()
-		#Perform query and return JSON data
+		#Perform query and return row with that store's data
 		query = conn.execute("SELECT * FROM Modules WHERE StoreCode =?", (store_code.upper()))
+		queryResult = (query.fetchone())
 		
+		#Make sure that a valid row in the DB exists.
+		if str(queryResult) == 'None':
+			#Invalid store code, log the error and return 'Invalid Store Code'			
+			print ('Error, supplied store_code ' + store_code.upper() + ' did not match any records')
+			return ('Invalid Store Code')
+		else:
+			print ('Returned data was ' + str(queryResult) )
+		
+		#Convert 
+		#	FROM	(11, 'ABCP01', 1, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1)
+		#   TO		10101101000000000000000001
+		moduleListTmp = queryResult[2:]
+		#Convert from a tuple list of numbers to a string.  See stackoverflow.com/questions/10880813/
+		modules = ''.join(str(m) for m in moduleListTmp)
+		print ('My modules are ' + modules)
+			
 		#Define Variables------
 		host = '10.10.3.44'
 		port = 12345
 		#serialNumber = '7777'
-		modules = '1011100010000000010000001'
+		#modules = '1011100010000000010000001'
 		numberOfClients = '10'
 		#store_code = 'ivan01'
 		#----------------------
