@@ -77,7 +77,7 @@ class GetKey_Meta(Resource):
 		
 		#Convert 
 		#	FROM	(11, 'ABCP01', 1, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1)
-		#   TO		10101101000000000000000001
+		#   TO		10101101000000000000000001      #Just the module columns, no spaces...
 		moduleListTmp = queryResult[2:]
 		#Convert from a tuple list of numbers to a string.  See stackoverflow.com/questions/10880813/
 		modules = ''.join(str(m) for m in moduleListTmp)
