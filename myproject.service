@@ -1,0 +1,13 @@
+[Unit]
+Description=uWSGI instance to serve myproject
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/home/ivanl/keyserver
+Environment="PATH=/home/ivanl/keyserver/myprojectenv/bin"
+ExecStart=/home/ivanl/keyserver/myprojectenv/bin/uwsgi --ini keyserver.ini
+
+[Install]
+WantedBy=multi-user.target
