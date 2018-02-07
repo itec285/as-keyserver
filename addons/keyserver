@@ -1,0 +1,9 @@
+server {
+    listen 80;
+    server_name 10.10.4.118;
+
+    location / {
+        include uwsgi_params;
+        uwsgi_pass unix:///home/ivanl/keyserver/app.sock;
+    }
+}
