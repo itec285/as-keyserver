@@ -14,7 +14,7 @@ pip install flask-sqlalchemy
 cp ~/as-keyserver/app.py .
 cp ~/as-keyserver/licenseKey.db .
 cp ~/as-keyserver/addons/wsgi.py .
-cp ~/as-keyserver/addons/leyserver.ini .
+cp ~/as-keyserver/addons/keyserver.ini .
 
 
 ###TEST with Python###
