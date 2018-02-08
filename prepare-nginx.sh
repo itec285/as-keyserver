@@ -1,17 +1,22 @@
-   56  # START OF NGINX#
-   57  sudo apt-get update
-   58  sudo apt-get install python3-pip python3-dev nginx
-   60  sudo pip3 install virtualenv
-   62  cd ~
-   64  mkdir keyserver
-   66  cd keyserver
-   86  virtualenv myprojectenv
-   87  source myprojectenv/bin/activate
-   88  pip install uwsgi flask
-   90  cp ~/as-keyserver/app.py .
-   93  pip install flask-restful
-   94  pip install flask-sqlalchemy
-   97  sudo cp /home/asadmins/licenseKey.db .
+# START OF NGINX#  see https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-uwsgi-and-nginx-on-ubuntu-16-04
+
+sudo apt-get update
+sudo apt-get install python3-pip python3-dev nginx
+sudo pip3 install virtualenv
+cd ~
+mkdir keyserver
+cd keyserver
+virtualenv myprojectenv
+source myprojectenv/bin/activate
+pip install uwsgi flask
+pip install flask-restful
+pip install flask-sqlalchemy
+cp ~/as-keyserver/app.py .
+cp ~/as-keyserver/licenseKey.db .
+cp ~/as-keyserver/addons/wsgi.py .
+cp ~/as-keyserver/addons/leyserver.ini .
+
+
 ###TEST with Python###
    98  python app.py 
 ##Create a new file called wsgi in the current directory.  Populate as follows##
