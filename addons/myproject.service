@@ -3,7 +3,7 @@ Description=uWSGI instance to serve myproject
 After=network.target
 
 [Service]
-User=www-data
+User=ivanl
 Group=www-data
 WorkingDirectory=/home/ivanl/keyserver
 Environment="PATH=/home/ivanl/keyserver/myprojectenv/bin"
