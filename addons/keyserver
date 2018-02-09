@@ -1,9 +1,9 @@
 server {
     listen 80;
-    server_name 10.10.4.118;
+    server_name www.asregister.tk;
 
     location / {
         include uwsgi_params;
-        uwsgi_pass unix:///home/ivanl/keyserver/myproject.sock;
+        uwsgi_pass unix:///home/asadmins/keyserver/myproject.sock;
     }
 }
