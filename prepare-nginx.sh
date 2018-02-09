@@ -41,6 +41,7 @@ sudo systemctl start myproject
 sudo systemctl enable myproject
 
 #Note - keyserver file contains the server address so if it changes you need to update this file
+cd ~/as-keyserver
 sudo cp addons/keyserver /etc/nginx/sites-available/
 
 sudo ln -s /etc/nginx/sites-available/keyserver /etc/nginx/sites-enabled/
