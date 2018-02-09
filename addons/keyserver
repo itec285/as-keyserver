@@ -1,6 +1,6 @@
 server {
     listen 80;
-    server_name www.asregister.tk;
+    server_name www.askeyserver.tk;
 
     location / {
         include uwsgi_params;
