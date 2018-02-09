@@ -36,6 +36,7 @@ uwsgi --socket 0.0.0.0:5000 --protocol=http -w wsgi:app
 deactivate
 
 #Create our service
+cd ~/as-keyserver
 sudo cp addons/myproject.service /etc/systemd/system/
 sudo systemctl start myproject
 sudo systemctl enable myproject
@@ -51,7 +52,15 @@ sudo nginx -t
 
 sudo systemctl restart nginx
 
-#Allow NGINX traffic through the firewall.
+#Allow NGINX and other important traffic through the firewall, then enable it
+sudo ufw allow openssh
 sudo ufw allow 'Nginx Full'
+sudo ufw enable
 
-echo -e "\n\tYOU ARE DONE :-)\n\tivanl@auto-star.com\n\twww.auto-star.com" | boxes -d dog
+#Setup Lets Encrypt - see https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-16-04
+sudo add-apt-repository -y ppa:certbot/certbot
+sudo apt-get update
+sudo apt install -y python-certbot-nginx
+
+#Show final message
+echo -e "\n\t            YOU ARE DONE EXCEPT FOR ONE THING :-)\n\t\n\trun $ sudo certbot --nginx -d example.com -d www.example.com \n\t\n\t Thanks for everything.  Regards, Ivan. ivanl@auto-star.com" | boxes -d dog
