@@ -5,7 +5,7 @@
 # Feb 2018 IL
 
 sudo apt-get update
-sudo apt-get install python3-pip python3-dev nginx
+sudo apt install -y python3-pip python3-dev nginx boxes
 sudo pip3 install virtualenv
 cd ~
 mkdir keyserver
@@ -56,3 +56,5 @@ sudo systemctl restart nginx
 
 #Allow NGINX traffic through the firewall.
 sudo ufw allow 'Nginx Full'
+
+echo -e "\n\tYOU ARE DONE :-)\n\tivanl@auto-star.com\n\twww.auto-star.com" | boxes -d dog
