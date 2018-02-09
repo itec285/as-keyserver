@@ -98,8 +98,8 @@ class GetKey_Meta(Resource):
 		
 		#return jsonify(myanswer)
 		#return jsonify({'Data': myanswer})
-		#return str(myanswer[1])
-		return jsonify({'Data':myanswer[1]})
+		return str(myanswer[1])
+		#return jsonify({'Data':myanswer[1]})
 
 #The StoreCodes meta option is normally used for debugging only.
 api.add_resource(StoreCodes_Meta, '/starplus/api/v1.0/storecodes')
