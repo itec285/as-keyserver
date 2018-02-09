@@ -28,6 +28,7 @@ read -rsp $'Press any key to continue...\n' -n 1 key
 python app.py 
 
 ##Now, test uwsgi##
+echo
 echo -e "\n\tSecond test, manually with uwsgi\n\t" | boxes -d stone
 read -rsp $'Press any key to continue...\n' -n 1 key
 uwsgi --socket 0.0.0.0:5000 --protocol=http -w wsgi:app
