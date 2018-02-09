@@ -11,6 +11,8 @@ cd ~
 mkdir keyserver
 cd keyserver
 virtualenv myprojectenv
+
+#Prepare the virtual environment
 source myprojectenv/bin/activate
 pip install uwsgi flask
 pip install flask-restful
@@ -21,17 +23,13 @@ cp ~/as-keyserver/licenseKey.db .
 cp ~/as-keyserver/addons/wsgi.py .
 cp ~/as-keyserver/addons/keyserver.ini .
 
-echo \###########################################
-echo \#    First test, manually with python     \#
-echo \###########################################
-echo
+echo -e "\n\tFirst test, manually with python\n\t" | boxes -d stone
 read -rsp $'Press any key to continue...\n' -n 1 key
 python app.py 
 
 ##Now, test uwsgi##
-echo \###########################################
-echo \#    Second test, manually with uwsgi     \#
-echo \###########################################
+echo -e "\n\tSecond test, manually with uwsgi\n\t" | boxes -d stone
+read -rsp $'Press any key to continue...\n' -n 1 key
 uwsgi --socket 0.0.0.0:5000 --protocol=http -w wsgi:app
 
 ##If everything works to this point, we are done with test environment#
@@ -47,9 +45,7 @@ sudo cp addons/keyserver /etc/nginx/sites-available/
 
 sudo ln -s /etc/nginx/sites-available/keyserver /etc/nginx/sites-enabled/
 
-echo \###########################################
-echo \#    Check nginx for errors               \#
-echo \###########################################
+echo -e "Check nginx for errors " | boxes -d stone
 sudo nginx -t
 
 sudo systemctl restart nginx
