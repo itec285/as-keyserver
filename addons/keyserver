@@ -1,6 +1,6 @@
 server {
     listen 80;
-    server_name www.askeyserver.tk;
+    server_name keys.auto-star.com;
 
     location / {
         include uwsgi_params;
