@@ -64,4 +64,4 @@ sudo apt-get update
 sudo apt install -y python-certbot-nginx
 
 #Show final message
-echo -e "\n\t            YOU ARE DONE EXCEPT FOR ONE THING :-)\n\t\n\trun $ sudo certbot --nginx -d example.com -d www.example.com \n\t\n\t Thanks for everything.  Regards, Ivan. ivanl@auto-star.com" | boxes -d dog
+echo -e "\n\t            YOU ARE DONE EXCEPT FOR ONE THING :-)\n\t\n\trun $ sudo certbot --nginx -d keys.auto-star.com \n\t\n\t Thanks for everything.  Regards, Ivan. ivanl@auto-star.com" | boxes -d dog
