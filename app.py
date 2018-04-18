@@ -71,7 +71,7 @@ class GetKey_Meta(Resource):
 		if str(queryResult) == 'None':
 			#Invalid store code, log the error and return 'Invalid Store Code'			
 			print ('Error, supplied store_code ' + store_code.upper() + ' did not match any records')
-			return ('Invalid Store Code')
+			return ('ERROR:Invalid Store Code')
 		else:
 			print ('Returned data was ' + str(queryResult) )
 		
