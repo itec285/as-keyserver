@@ -71,7 +71,7 @@ class GetModules2_Meta(Resource):
 		returnString = "Storecode " + str(queryresult[1]) + "<br>"
 		if (queryresult[2] == 1): returnString += "| Basic is on" + <br>
 		if (queryresult[3] == 1): returnString += "| Star-Link Integration is on" + "<br>"
-		if (queryresult[4] == 1): returnString += "| A/R is on" + "<br>"
+		if (queryresult[4] == 1): returnString += "| A/R is on" + '<br>'
 		if (queryresult[5] == 1): returnString += "| Loyalty is on"
 		if (queryresult[6] == 1): returnString += "| Signs&Labels is on"
 		if (queryresult[7] == 1): returnString += "| AdvancedInvControl is on"
