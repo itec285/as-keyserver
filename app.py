@@ -57,6 +57,14 @@ class GetModules_Meta(Resource):
 		query = conn.execute("SELECT * FROM Modules WHERE StoreCode =?", (store_code.upper()))
 		return jsonify({'Data': query.cursor.fetchall()})
 
+class GetModules2_Meta(Resource):
+	def get(self,store_code, external_IPAddress, internal_IPAddress):
+		#Connect to the database
+		conn = e.connect()
+		#Perform query and return JSON data
+		query = conn.execute("SELECT * FROM Modules WHERE StoreCode =?", (store_code.upper()))
+		return jsonify({'Data': query.cursor.fetchall()})
+
 class GetKey_Meta(Resource):
 	def get(self,store_code, serialNumber, external_IPAddress, internal_IPAddress):
 		print ('\n\n\n#######    NEW KEY REQUEST - ' +  str(datetime.datetime.now()) + '    #######')
@@ -104,6 +112,7 @@ class GetKey_Meta(Resource):
 #The StoreCodes meta option is normally used for debugging only.
 api.add_resource(StoreCodes_Meta, '/starplus/api/v1.0/storecodes')
 api.add_resource(GetModules_Meta, '/starplus/api/v1.0/getmodules/<string:store_code>/<string:external_IPAddress>/<string:internal_IPAddress>')
+api.add_resource(GetModules2_Meta, '/starplus/api/v2.0/getmodules/<string:store_code>/<string:external_IPAddress>/<string:internal_IPAddress>')
 api.add_resource(GetKey_Meta, '/starplus/api/v1.0/getkey/<string:store_code>/<string:serialNumber>/<string:external_IPAddress>/<string:internal_IPAddress>')
 
 
