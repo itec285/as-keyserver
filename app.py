@@ -80,7 +80,7 @@ class GetModules2_Meta(Resource):
 		if (queryresult[10] == 1): returnString += "| Multi-Store is on"
 		if (queryresult[11] == 1): returnString += "| Wireless is on"
 		
-		return returnString
+		return jsonify({returnString})
 		#return jsonify({'Data': returnString})
 
 class GetKey_Meta(Resource):
