@@ -59,47 +59,50 @@ class GetModules_Meta(Resource):
 
 class GetModules2_Meta(Resource):
 	def get(self,store_code, external_IPAddress, internal_IPAddress):
-		#Connect to the database
-		conn = e.connect()
-		#Perform query and return JSON data
-		query = conn.execute("SELECT * FROM Modules WHERE StoreCode =?", (store_code.upper()))
-		
-		#The above query will actually return a list of lists.  Return just the first list and put into the var result
-		queryresult = query.cursor.fetchall()[0]
-		
-		#Start building the returnstring
-		returnString = "Storecode " + str(queryresult[1]) 
-		if (queryresult[2] == 1): returnString += ": Basic is on" 
-		if (queryresult[3] == 1): returnString += "| Star-Link Integration is on" 
-		if (queryresult[4] == 1): returnString += "| A/R is on" 
-		if (queryresult[5] == 1): returnString += "| Loyalty is on"
-		if (queryresult[6] == 1): returnString += "| Signs&Labels is on"
-		if (queryresult[7] == 1): returnString += "| AdvancedInvControl is on"
-		if (queryresult[8] == 1): returnString += "| Scientific is on"
-		if (queryresult[9] == 1): returnString += "| Purchasing&Receiving is on"
-		if (queryresult[10] == 1): returnString += "| Multi-Store is on"
-		if (queryresult[11] == 1): returnString += "| Wireless is on"
-		if (queryresult[12] == 1): returnString += "| Replenishment is on"
-		if (queryresult[13] == 1): returnString += "| OrderDesk is on"
-		if (queryresult[14] == 1): returnString += "| Delivery is on"
-		if (queryresult[15] == 1): returnString += "| AdvancedSigCap is on"
-		if (queryresult[16] == 1): returnString += "| Accounting is on"
-		if (queryresult[17] == 1): returnString += "| InterStoreTransfer is on"
-		if (queryresult[18] == 1): returnString += "| Fingerprint is on"
-		if (queryresult[19] == 1): returnString += "| GasPump is on"
-		if (queryresult[20] == 1): returnString += "| PDALineBusting is on"
-		if (queryresult[21] == 1): returnString += "| Inactive is on"
-		if (queryresult[22] == 1): returnString += "| Inactive is on"
-		if (queryresult[23] == 1): returnString += "| Inactive is on"
-		if (queryresult[24] == 1): returnString += "| AdvancedGWP is on"
-		if (queryresult[25] == 1): returnString += "| Rentals is on"
-		if (queryresult[26] == 1): returnString += "| Kiosk is on"
-		if (queryresult[27] == 1): returnString += "| Dashboard is on"
-		returnString += "| Total number of clients: " + str(queryresult[28]) + ". Includes a 'fudge' factor of 3 and one till/workstation each for the basic package. So all stores start at 5 plus any additional tills and workstations.  Base store + 1 till = 6." 
- 	
-		return returnString
-		#return jsonify({'Data': returnString})
+		if (external_IPAddress == '24.244.1.123'):
+			#Connect to the database
+			conn = e.connect()
+			#Perform query and return JSON data
+			query = conn.execute("SELECT * FROM Modules WHERE StoreCode =?", (store_code.upper()))
 
+			#The above query will actually return a list of lists.  Return just the first list and put into the var result
+			queryresult = query.cursor.fetchall()[0]
+
+			#Start building the returnstring
+			returnString = "Storecode " + str(queryresult[1]) 
+			if (queryresult[2] == 1): returnString += ": Basic is on" 
+			if (queryresult[3] == 1): returnString += "| Star-Link Integration is on" 
+			if (queryresult[4] == 1): returnString += "| A/R is on" 
+			if (queryresult[5] == 1): returnString += "| Loyalty is on"
+			if (queryresult[6] == 1): returnString += "| Signs&Labels is on"
+			if (queryresult[7] == 1): returnString += "| AdvancedInvControl is on"
+			if (queryresult[8] == 1): returnString += "| Scientific is on"
+			if (queryresult[9] == 1): returnString += "| Purchasing&Receiving is on"
+			if (queryresult[10] == 1): returnString += "| Multi-Store is on"
+			if (queryresult[11] == 1): returnString += "| Wireless is on"
+			if (queryresult[12] == 1): returnString += "| Replenishment is on"
+			if (queryresult[13] == 1): returnString += "| OrderDesk is on"
+			if (queryresult[14] == 1): returnString += "| Delivery is on"
+			if (queryresult[15] == 1): returnString += "| AdvancedSigCap is on"
+			if (queryresult[16] == 1): returnString += "| Accounting is on"
+			if (queryresult[17] == 1): returnString += "| InterStoreTransfer is on"
+			if (queryresult[18] == 1): returnString += "| Fingerprint is on"
+			if (queryresult[19] == 1): returnString += "| GasPump is on"
+			if (queryresult[20] == 1): returnString += "| PDALineBusting is on"
+			if (queryresult[21] == 1): returnString += "| Inactive is on"
+			if (queryresult[22] == 1): returnString += "| Inactive is on"
+			if (queryresult[23] == 1): returnString += "| Inactive is on"
+			if (queryresult[24] == 1): returnString += "| AdvancedGWP is on"
+			if (queryresult[25] == 1): returnString += "| Rentals is on"
+			if (queryresult[26] == 1): returnString += "| Kiosk is on"
+			if (queryresult[27] == 1): returnString += "| Dashboard is on"
+			returnString += "| Total number of clients: " + str(queryresult[28]) + ". Includes a 'fudge' factor of 3 and one till/workstation each for the basic package. So all stores start at 5 plus any additional tills and workstations.  Base store + 1 till = 6." 
+
+			return returnString
+			#return jsonify({'Data': returnString})
+		else:
+			return "ERROR: Invalid Request"
+			
 class GetKey_Meta(Resource):
 	def get(self,store_code, serialNumber, external_IPAddress, internal_IPAddress):
 		print ('\n\n\n#######    NEW KEY REQUEST - ' +  str(datetime.datetime.now()) + '    #######')
