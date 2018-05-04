@@ -95,7 +95,7 @@ class GetModules2_Meta(Resource):
 		if (queryresult[25] == 1): returnString += "| Rentals is on"
 		if (queryresult[26] == 1): returnString += "| Kiosk is on"
 		if (queryresult[27] == 1): returnString += "| Dashboard is on"
-		returnString += "| Total number of clients: " + + str(queryresult[28]) + ". Includes a 'fudge' factor of 3 and one till/workstation each for the basic package. So all stores start at 5 plus any additional tills and workstations.  Base store + 1 till = 6." 
+		returnString += "| Total number of clients: " + str(queryresult[28]) + ". Includes a 'fudge' factor of 3 and one till/workstation each for the basic package. So all stores start at 5 plus any additional tills and workstations.  Base store + 1 till = 6." 
  	
 		return returnString
 		#return jsonify({'Data': returnString})
