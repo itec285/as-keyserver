@@ -68,7 +68,17 @@ class GetModules2_Meta(Resource):
 		queryresult = query.cursor.fetchall()[0]
 		
 		#Start building the returnstring
-		returnString = "\n" + "        Storecode " + str(queryresult[1])+ " "
+		returnString = "Storecode " + str(queryresult[1])
+		if (queryresult[2] == 1): returnString += "| Basic is on"
+		if (queryresult[3] == 1): returnString += "| Star-Link Integration is on"
+		if (queryresult[4] == 1): returnString += "| A/R is on"
+		if (queryresult[5] == 1): returnString += "| Loyalty is on"
+		if (queryresult[6] == 1): returnString += "| Signs&Labels is on"
+		if (queryresult[7] == 1): returnString += "| AdvancedInvControl is on"
+		if (queryresult[8] == 1): returnString += "| Scientific is on"
+		if (queryresult[9] == 1): returnString += "| Purchasing&Receiving is on"
+		if (queryresult[10] == 1): returnString += "| Multi-Store is on"
+		if (queryresult[11] == 1): returnString += "| Wireless is on"
 		
 		return returnString
 		#return jsonify({'Data': returnString})
