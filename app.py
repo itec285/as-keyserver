@@ -70,7 +70,8 @@ class GetModules2_Meta(Resource):
 		#Start building the returnstring
 		returnString = "\n" + "        Storecode " + str(queryresult[1])+ " "
 		
-		return jsonify({'Data': returnString})
+		return returnString
+		#return jsonify({'Data': returnString})
 
 class GetKey_Meta(Resource):
 	def get(self,store_code, serialNumber, external_IPAddress, internal_IPAddress):
