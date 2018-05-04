@@ -63,7 +63,14 @@ class GetModules2_Meta(Resource):
 		conn = e.connect()
 		#Perform query and return JSON data
 		query = conn.execute("SELECT * FROM Modules WHERE StoreCode =?", (store_code.upper()))
-		return jsonify({'Data': query.cursor.fetchall()})
+		
+		#The above query will actually return a list of lists.  Return just the first list and put into the var result
+		queryresult = query.cursor.fetchall()[0]
+		
+		#Start building the returnstring
+		returnString = "\n" + "        Storecode " + str(result[1])+ " "
+		
+		return jsonify({'Data': returnString})
 
 class GetKey_Meta(Resource):
 	def get(self,store_code, serialNumber, external_IPAddress, internal_IPAddress):
