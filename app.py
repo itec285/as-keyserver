@@ -68,7 +68,7 @@ class GetModules2_Meta(Resource):
 		queryresult = query.cursor.fetchall()[0]
 		
 		#Start building the returnstring
-		returnString = "\n" + "        Storecode " + str(result[1])+ " "
+		returnString = "\n" + "        Storecode " + str(queryresult[1])+ " "
 		
 		return jsonify({'Data': returnString})
 
