@@ -138,14 +138,24 @@ class GetKey_Meta(Resource):
 		#store_code = 'ivan01'
 		#----------------------
 		
+		#Now, go out and fetch the key from the key server.
 		myanswer = get_askey(host, port, serialNumber, modules, numberOfClients, store_code)
 		#Remove trailing newline from the key portion of the answer
 		myanswer[1] = str(myanswer[1]).rstrip()
 		
+		#Before we return the request, log the request and the result.
+		now = datetime.datetime.now()
+		requestType = 'GetKey'
+		query = conn.execute("INSERT INTO RequestLog(DateTime, RequestType) VALUES(?,?)", (now, requestType))
+				
+		#Send an answer back.  Note that there's a lot of ways to do this below.  I worked with Aaron 
+		# to come up with the best way to send data back for him.
+		return str(myanswer[1])
 		#return jsonify(myanswer)
 		#return jsonify({'Data': myanswer})
-		return str(myanswer[1])
 		#return jsonify({'Data':myanswer[1]})
+		
+		
 
 #The StoreCodes meta option is normally used for debugging only.
 api.add_resource(StoreCodes_Meta, '/starplus/api/v1.0/storecodes')
