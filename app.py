@@ -146,7 +146,7 @@ class GetKey_Meta(Resource):
 		#Before we return the request, log the request and the result.
 		now = datetime.datetime.now()
 		requestType = 'GetKey'
-		query = conn.execute("INSERT INTO RequestLog(DateTime, RequestType) VALUES(?,?)", (now, requestType))
+		query = conn.execute("INSERT INTO RequestLog(DateTime, RequestType, StoreCode, SerialNumber, ExternalIPAddress, InternalIPAddress) VALUES(?,?,?,?,?,?)", (now, requestType, store_code.upper(), serialNumber, external_IPAddress, internal_IPAddress))
 				
 		#Send an answer back.  Note that there's a lot of ways to do this below.  I worked with Aaron 
 		# to come up with the best way to send data back for him.
