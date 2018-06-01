@@ -1,7 +1,15 @@
-#curl -i http://localhost:5000/starplus/api/v1.0/storecodes
+echo
+echo \##########TESTING STORECODES#####################################
+curl -i http://localhost:5000/starplus/api/v1.0/storecodes
 
+echo
 echo \##########TESTING GETMODULES#####################################
 curl -i http://localhost:5000/starplus/api/v1.0/getmodules/abcp01/24.244.1.123/10.10.1.1
+#echo \##############################################################
+
+echo
+echo \##########TESTING GETMODULES2####################################
+curl -i http://localhost:5000/starplus/api/v2.0/getmodules/abcp01/24.244.1.123/10.10.1.1
 #echo \##############################################################
 
 echo

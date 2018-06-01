@@ -47,7 +47,15 @@ class StoreCodes_Meta(Resource):
 		conn = e.connect()
 		#perform query and return JSON data
 		query = conn.execute("Select distinct STORECODE from Modules")
-		return {'StoreCodes': [i[0] for i in query.cursor.fetchall()]}
+		queryResult = [i[0] for i in query.cursor.fetchall()]
+		
+		#Before we return the request, log the request and the result.
+		now = datetime.datetime.now()
+		requestType = 'StoreCodes'
+		query = conn.execute("INSERT INTO RequestLog(DateTime, RequestType) VALUES(?,?)", (now, requestType))
+				
+		return {'StoreCodes': queryResult}
+		#return {'StoreCodes': [i[0] for i in query.cursor.fetchall()]}
 
 class GetModules_Meta(Resource):
 	def get(self,store_code, external_IPAddress, internal_IPAddress):
@@ -55,7 +63,14 @@ class GetModules_Meta(Resource):
 		conn = e.connect()
 		#Perform query and return JSON data
 		query = conn.execute("SELECT * FROM Modules WHERE StoreCode =?", (store_code.upper()))
-		return jsonify({'Data': query.cursor.fetchall()})
+		queryResult = query.cursor.fetchall()[0]
+		
+		#Before we return the request, log the request and the result.
+		now = datetime.datetime.now()
+		requestType = 'GetModules'
+		query = conn.execute("INSERT INTO RequestLog(DateTime, RequestType, StoreCode, ExternalIPAddress, InternalIPAddress) VALUES(?,?,?,?,?)", (now, requestType, store_code.upper(), external_IPAddress, internal_IPAddress))
+			
+		return jsonify({'Data': queryResult})
 
 class GetModules2_Meta(Resource):
 	def get(self,store_code, external_IPAddress, internal_IPAddress):
@@ -98,9 +113,21 @@ class GetModules2_Meta(Resource):
 			if (queryresult[27] == 1): returnString += "| Dashboard is on"
 			returnString += "| Total number of clients: " + str(queryresult[28]) + ". Includes a 'fudge' factor of 3 and one till/workstation each for the basic package. So all stores start at 5 plus any additional tills and workstations.  Base store + 1 till = 6." 
 
+			#Before we return the request, log the request and the result.
+			now = datetime.datetime.now()
+			requestType = 'GetModules2'
+			query = conn.execute("INSERT INTO RequestLog(DateTime, RequestType, StoreCode, ExternalIPAddress, InternalIPAddress) VALUES(?,?,?,?,?)", (now, requestType, store_code.upper(), external_IPAddress, internal_IPAddress))
+			
+			#If they've made it here, it was a valid request.  Return the full returnString we just built.
 			return returnString
 			#return jsonify({'Data': returnString})
 		else:
+			#Before we return the request, log the request and the result.
+			now = datetime.datetime.now()
+			requestType = 'GetModules2'
+			query = conn.execute("INSERT INTO RequestLog(DateTime, RequestType, StoreCode, ExternalIPAddress, InternalIPAddress) VALUES(?,?,?,?,?)", (now, requestType, store_code.upper(), external_IPAddress, internal_IPAddress))
+			
+			#If we're in this section, the request was invalid due to wrong external IP.  Return an error code.		
 			return "ERROR: Invalid Request"
 			
 class GetKey_Meta(Resource):
