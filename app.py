@@ -8,6 +8,7 @@ import datetime, socket
 
 #Create an engine for connecting to SQLIte3, assuming it is in the local folder
 e = create_engine('sqlite:///licenseKey.db')
+logDB = create_engine('sqlite:///requestLog.db')
 
 app = Flask(__name__)
 api = Api(app)
@@ -47,19 +48,32 @@ class StoreCodes_Meta(Resource):
 		real_IPAddress = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
 		print ('-------------------\n New Request from: ' + real_IPAddress)
 		
-		#Connect to the database
+		#Connect to the databases
 		conn = e.connect()
-		#perform query and return JSON data
-		query = conn.execute("Select distinct STORECODE from Modules")
-		queryResult = [i[0] for i in query.cursor.fetchall()]
+		logconn = logDB.connect()
 		
-		#Before we return the request, log the request and the result.
-		now = datetime.datetime.now()
-		requestType = 'StoreCodes'
-		query = conn.execute("INSERT INTO RequestLog(DateTime, RequestType, RealIPAddress) VALUES(?,?,?)", (now, requestType, real_IPAddress))
-				
-		return {'StoreCodes': queryResult}
-		#return {'StoreCodes': [i[0] for i in query.cursor.fetchall()]}
+		#Restrict access to this function by detected (real) IP
+		if (real_IPAddress.startswith('10.10.') or real_IPAddress.startswith('127.0.0.1')):
+		
+			#perform query and return JSON data
+			query = conn.execute("Select distinct STORECODE from Modules")
+			queryResult = [i[0] for i in query.cursor.fetchall()]
+			
+			#Before we return the request, log the request and the result.
+			now = datetime.datetime.now()
+			requestType = 'StoreCodes'
+			query = logconn.execute("INSERT INTO RequestLog(DateTime, RequestType, RealIPAddress) VALUES(?,?,?)", (now, requestType, real_IPAddress))
+					
+			return {'StoreCodes': queryResult}
+			#return {'StoreCodes': [i[0] for i in query.cursor.fetchall()]}
+		else:
+			#Before we return the request, log the request and the result.
+			now = datetime.datetime.now()
+			requestType = 'StoreCodes'
+			query = logconn.execute("INSERT INTO RequestLog(DateTime, RequestType, RealIPAddress) VALUES(?,?,?)", (now, requestType, real_IPAddress))
+
+			#If we're in this section, the request was invalid due to wrong external IP or detected (real) IP.  Return an error code.
+			return "ERROR: Invalid Request - bad IP"
 
 class GetModules_Meta(Resource):
 	def get(self,store_code, external_IPAddress, internal_IPAddress):
@@ -67,18 +81,35 @@ class GetModules_Meta(Resource):
 		real_IPAddress = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
 		print ('-------------------\n New Request from: ' + real_IPAddress)
 		
-		#Connect to the database
+		#Connect to the databases
 		conn = e.connect()
-		#Perform query and return JSON data
-		query = conn.execute("SELECT * FROM Modules WHERE StoreCode =?", (store_code.upper()))
-		queryResult = query.cursor.fetchall()[0]
+		logconn = logDB.connect()
 		
-		#Before we return the request, log the request and the result.
-		now = datetime.datetime.now()
-		requestType = 'GetModules'
-		query = conn.execute("INSERT INTO RequestLog(DateTime, RequestType, StoreCode, ExternalIPAddress, InternalIPAddress, RealIPAddress) VALUES(?,?,?,?,?,?)", (now, requestType, store_code.upper(), external_IPAddress, internal_IPAddress, real_IPAddress))
+		#Restrict access to this function by (stated 'external') IP and detected (real) IP
+		if (external_IPAddress == '24.244.1.123') and (real_IPAddress.startswith('10.10.') or real_IPAddress.startswith('127.0.0.1')):		
+		
+			#Perform query and return JSON data
+			query = conn.execute("SELECT * FROM Modules WHERE StoreCode =?", (store_code.upper()))
+			queryResult = query.cursor.fetchall()[0]
 			
-		return jsonify({'Data': queryResult})
+			#Before we return the request, log the request and the result.
+			now = datetime.datetime.now()
+			requestType = 'GetModules'
+			query = logconn.execute("INSERT INTO RequestLog(DateTime, RequestType, StoreCode, ExternalIPAddress, InternalIPAddress, RealIPAddress) VALUES(?,?,?,?,?,?)", (now, requestType, store_code.upper(), external_IPAddress, internal_IPAddress, real_IPAddress))
+				
+			return jsonify({'Data': queryResult})
+		else:
+			#Before we return the error, log the request.
+			now = datetime.datetime.now()
+			requestType = 'GetModules2'
+			query = logconn.execute("INSERT INTO RequestLog(DateTime, RequestType, StoreCode, ExternalIPAddress, InternalIPAddress, RealIPAddress) VALUES(?,?,?,?,?,?)", (now, requestType, store_code.upper(), external_IPAddress, internal_IPAddress, real_IPAddress))
+			
+			#If we're in this section, the request was invalid due to wrong external IP or detected (real) IP.  Return an error code.		
+			if (external_IPAddress != '24.244.1.123'):
+				return "ERROR: Invalid Request - bad external IP"
+			
+			if not (real_IPAddress.startswith('10.10.') or real_IPAddress.startswith('127.0.0.1')):
+				return "ERROR: Invalid Request - bad IP"
 
 class GetModules2_Meta(Resource):
 	def get(self,store_code, external_IPAddress, internal_IPAddress):
@@ -86,9 +117,13 @@ class GetModules2_Meta(Resource):
 		real_IPAddress = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
 		print ('-------------------\n New Request from: ' + real_IPAddress)
 		
-		if (external_IPAddress == '24.244.1.123'):
-			#Connect to the database
-			conn = e.connect()
+		#Connect to the databases
+		conn = e.connect()
+		logconn = logDB.connect()
+
+		#Restrict access to this function by (stated 'external') IP and detected (real) IP
+		if (external_IPAddress == '24.244.1.123') and (real_IPAddress.startswith('10.10.') or real_IPAddress.startswith('127.0.0.1')):
+			
 			#Perform query and return JSON data
 			query = conn.execute("SELECT * FROM Modules WHERE StoreCode =?", (store_code.upper()))
 
@@ -128,7 +163,7 @@ class GetModules2_Meta(Resource):
 			#Before we return the request, log the request and the result.
 			now = datetime.datetime.now()
 			requestType = 'GetModules2'
-			query = conn.execute("INSERT INTO RequestLog(DateTime, RequestType, StoreCode, ExternalIPAddress, InternalIPAddress, RealIPAddress) VALUES(?,?,?,?,?,?)", (now, requestType, store_code.upper(), external_IPAddress, internal_IPAddress, real_IPAddress))
+			query = logconn.execute("INSERT INTO RequestLog(DateTime, RequestType, StoreCode, ExternalIPAddress, InternalIPAddress, RealIPAddress) VALUES(?,?,?,?,?,?)", (now, requestType, store_code.upper(), external_IPAddress, internal_IPAddress, real_IPAddress))
 			
 			#If they've made it here, it was a valid request.  Return the full returnString we just built.
 			return returnString
@@ -137,10 +172,14 @@ class GetModules2_Meta(Resource):
 			#Before we return the request, log the request and the result.
 			now = datetime.datetime.now()
 			requestType = 'GetModules2'
-			query = conn.execute("INSERT INTO RequestLog(DateTime, RequestType, StoreCode, ExternalIPAddress, InternalIPAddress, RealIPAddress) VALUES(?,?,?,?,?,?)", (now, requestType, store_code.upper(), external_IPAddress, internal_IPAddress, real_IPAddress))
+			query = logconn.execute("INSERT INTO RequestLog(DateTime, RequestType, StoreCode, ExternalIPAddress, InternalIPAddress, RealIPAddress) VALUES(?,?,?,?,?,?)", (now, requestType, store_code.upper(), external_IPAddress, internal_IPAddress, real_IPAddress))
 			
-			#If we're in this section, the request was invalid due to wrong external IP.  Return an error code.		
-			return "ERROR: Invalid Request"
+			#If we're in this section, the request was invalid due to wrong external IP or detected (real) IP.  Return an error code.		
+			if (external_IPAddress != '24.244.1.123'):
+				return "ERROR: Invalid Request - bad external IP"
+			
+			if not (real_IPAddress.startswith('10.10.') or real_IPAddress.startswith('127.0.0.1')):
+				return "ERROR: Invalid Request - bad IP"
 			
 class GetKey_Meta(Resource):
 	def get(self,store_code, serialNumber, external_IPAddress, internal_IPAddress):
@@ -150,8 +189,10 @@ class GetKey_Meta(Resource):
 		
 		print ('\n\n\n#######    NEW KEY REQUEST - ' +  str(datetime.datetime.now()) + '    #######')
 		
-		#Connect to the database
+		#Connect to the databases
 		conn = e.connect()
+		logconn = logDB.connect()
+		
 		#Perform query and return row with that store's data
 		query = conn.execute("SELECT * FROM Modules WHERE StoreCode =?", (store_code.upper()))
 		queryResult = (query.fetchone())
@@ -189,7 +230,7 @@ class GetKey_Meta(Resource):
 		#Before we return the request, log the request and the result.
 		now = datetime.datetime.now()
 		requestType = 'GetKey'
-		query = conn.execute("INSERT INTO RequestLog(DateTime, RequestType, StoreCode, SerialNumber, ExternalIPAddress, InternalIPAddress, RealIPAddress) VALUES(?,?,?,?,?,?,?)", (now, requestType, store_code.upper(), serialNumber, external_IPAddress, internal_IPAddress, real_IPAddress))
+		query = logconn.execute("INSERT INTO RequestLog(DateTime, RequestType, StoreCode, SerialNumber, ExternalIPAddress, InternalIPAddress, RealIPAddress) VALUES(?,?,?,?,?,?,?)", (now, requestType, store_code.upper(), serialNumber, external_IPAddress, internal_IPAddress, real_IPAddress))
 				
 		#Send an answer back.  Note that there's a lot of ways to do this below.  I worked with Aaron 
 		# to come up with the best way to send data back for him.
