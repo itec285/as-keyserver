@@ -19,6 +19,10 @@ echo \##############################################################
 
 echo \##########TESTING SENDMODULES#################################
 curl -H "Content-type: text/plain" -X POST http://localhost:5000/starplus/api/v1.0/sendmodules -d "test01,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,8,AAA1,8.2.7,Ivans Store,123 Main Street Medicine Hat AB,403-555-1234"
+
+
+#Uncomment the below to test the live server
+#curl -H Content-type: text/plain -X POST https://keys.auto-star.com/starplus/api/v1.0/sendmodules -d test01,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,8,AAA1,8.2.7,Ivans Store,123 Main Street Medicine Hat AB,403-555-1234
 echo \##############################################################
 
 #echo \##########TESTING ON NGINX######################################
