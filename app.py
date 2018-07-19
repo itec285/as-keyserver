@@ -294,6 +294,12 @@ class SendModules_Meta(Resource):
 				version, location0Name, location0Address, location0Phone))
 				
 				returnString = {'data':query.lastrowid}
+				
+				#Before we return the returnstring, log the request and the result.
+				now = datetime.datetime.now()
+				requestType = 'SendModules'
+				query = logconn.execute("INSERT INTO RequestLog(DateTime, RequestType, StoreCode, SerialNumber, RealIPAddress) VALUES(?,?,?,?,?)", (now, requestType, store_code.upper(), serialNumber, real_IPAddress))
+				
 				return returnString
 				
 			else:
