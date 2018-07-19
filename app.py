@@ -239,14 +239,73 @@ class GetKey_Meta(Resource):
 		#return jsonify({'Data': myanswer})
 		#return jsonify({'Data':myanswer[1]})
 		
-		
-
+class SendModules_Meta(Resource):
+		def post(self):
+			real_IPAddress = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+			print ('-------------------\n New Request from: ' + real_IPAddress)	
+			
+			#Connect to the databases
+			conn = e.connect()
+			logconn = logDB.connect()
+			
+			
+			if request.headers['Content-Type'] == 'text/plain':
+				
+				#Get the contents of what I was sent
+				contents = request.data.decode('utf-8')
+				#Now, split it based on comma.  TODO: May be problematic in the case where commas are preceeded by an escape character.
+				contents = contents.split(",")
+								
+				store_code = contents[0].upper()
+				
+				#Get the individual modules from the contents (note there are 26 modules including module 0
+				module0, module1, module2, module3, module4, module5, module6, module7, module8, module9, \
+				module10, module11, module12, module13, module14, module15, module16, module17, module18, \
+				module19, module20, module21, module22, module23, module24, module25 = contents[1:27] 
+								
+				numberOfClients = contents[27]
+				serialNumber = contents[28]
+				version = contents[29]
+				location0Name = contents[30]
+				location0Address = contents[31]
+				location0Phone = contents[32]
+				
+				#For debug purposese only
+				'''
+				returnString = "Store Code and modules 0 and 25: " + " " + store_code + " " + module0 + " " + module25 			
+				returnString += "|  Number of Clients:" + numberOfClients 
+				returnString += "|  Serial Number:" + serialNumber 
+				returnString += "|  Version:" + version 
+				returnString += "|  Location 0 Name:" + location0Name 
+				returnString += "|  Location 0 Address:" + location0Address 
+				returnString += "|  Location 0 Phone:" + location0Phone 
+				return returnString
+				'''
+				
+				#Insert the data that we determined above into the ReportedModules Table in the licenseKey.db file
+				query = conn.execute("INSERT INTO ReportedModules (StoreCode, Module0, Module1, Module2, Module3, \
+				Module4, Module5, Module6, Module7, Module8, Module9, Module10, Module11, Module12, Module13, \
+				Module14, Module15, Module16, Module17, Module18, Module19, Module20, Module21, Module22, Module23, \
+				Module24, Module25, NumberOfClients, SerialNumber, Version, Location0Name, Location0Address, Location0Phone) \
+				VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", (store_code, \
+				module0, module1, module2, module3, module4, module5, module6, module7, module8, module9, \
+				module10, module11, module12, module13, module14, module15, module16, module17, module18, \
+				module19, module20, module21, module22, module23, module24, module25, numberOfClients, serialNumber, \
+				version, location0Name, location0Address, location0Phone))
+				
+				returnString = {'data':query.lastrowid}
+				return returnString
+				
+			else:
+				return "ERROR: Invalid Content-Type"
+				
+				
 #The StoreCodes meta option is normally used for debugging only.
 api.add_resource(StoreCodes_Meta, '/starplus/api/v1.0/storecodes')
 api.add_resource(GetModules_Meta, '/starplus/api/v1.0/getmodules/<string:store_code>/<string:external_IPAddress>/<string:internal_IPAddress>')
 api.add_resource(GetModules2_Meta, '/starplus/api/v2.0/getmodules/<string:store_code>/<string:external_IPAddress>/<string:internal_IPAddress>')
 api.add_resource(GetKey_Meta, '/starplus/api/v1.0/getkey/<string:store_code>/<string:serialNumber>/<string:external_IPAddress>/<string:internal_IPAddress>')
-
+api.add_resource(SendModules_Meta, '/starplus/api/v1.0/sendmodules')
 
 if __name__ == '__main__':
 #	app.run()		
