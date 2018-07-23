@@ -243,6 +243,8 @@ class SendModules_Meta(Resource):
 		def post(self):
 			real_IPAddress = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
 			print ('-------------------\n New Request from: ' + real_IPAddress)	
+			print ('    [--Start of Request Headers--] \n' + str(request.headers) + '    [--End of Request Headers--] \n')	
+			print ('    [--Start of Request Text--] \n' + str(request.data.decode('utf-8')) + '    [--End of Request Text--] \n')	
 			
 			#Connect to the databases
 			conn = e.connect()
@@ -295,14 +297,17 @@ class SendModules_Meta(Resource):
 				
 				returnString = {'data':query.lastrowid}
 				
-				#Before we return the returnstring, log the request and the result.
+				#Before we do anything else, log the request and the result.
 				now = datetime.datetime.now()
 				requestType = 'SendModules'
-				query = logconn.execute("INSERT INTO RequestLog(DateTime, RequestType, StoreCode, SerialNumber, RealIPAddress) VALUES(?,?,?,?,?)", (now, requestType, store_code.upper(), serialNumber, real_IPAddress))
-				
+				query = logconn.execute("INSERT INTO RequestLog(DateTime, RequestType, StoreCode, SerialNumber, RealIPAddress, RequestHeaders, RequestData) VALUES(?,?,?,?,?,?,?)", (now, requestType, store_code.upper(), serialNumber, real_IPAddress,str(request.headers),str(request.data.decode('utf-8'))  ))
+						
 				return returnString
 				
 			else:
+				now = datetime.datetime.now()
+				requestType = 'SendModules'
+				query = logconn.execute("INSERT INTO RequestLog(DateTime, RequestType, StoreCode, SerialNumber, RealIPAddress, RequestHeaders, RequestData) VALUES(?,?,?,?,?,?,?)", (now, requestType, 'INVALID CONTENT TYPE', '', real_IPAddress,str(request.headers),str(request.data.decode('utf-8')) ))
 				return "ERROR: Invalid Content-Type"
 				
 				
