@@ -14,6 +14,10 @@ app = Flask(__name__)
 api = Api(app)
 
 def get_askey(host, port, serialNumber, modules, numberOfClients, store_code):
+#This function's job is to take a key request (typically from GetKey) and parse the data, then open a 
+# socket connection to the keyserver, decode it and return the result.  Note that host and port are defined in GetKey
+# and passed as arguments to this function.
+
 	#Create the socket
 	s = socket.socket()
 	s.connect((host, port))
@@ -43,6 +47,8 @@ def get_askey(host, port, serialNumber, modules, numberOfClients, store_code):
 	return answer
 
 class StoreCodes_Meta(Resource):
+#Returns a list of all possible storecodes.  This is for testing purposes only and is blocked except
+# in cases where the request is coming from an internal address.
 	def get(self):
 		
 		real_IPAddress = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
@@ -76,6 +82,7 @@ class StoreCodes_Meta(Resource):
 			return "ERROR: Invalid Request - bad IP"
 
 class GetModules_Meta(Resource):
+#This returns a boolean list of what modules are turned on for a given store.  
 	def get(self,store_code, external_IPAddress, internal_IPAddress):
 		
 		real_IPAddress = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
@@ -112,6 +119,8 @@ class GetModules_Meta(Resource):
 				return "ERROR: Invalid Request - bad IP"
 
 class GetModules2_Meta(Resource):
+#This returns a formatted list of what modules are turned on for a given store.  It is similar in nature to GetModules
+# but formats the data in an easier to use format. 
 	def get(self,store_code, external_IPAddress, internal_IPAddress):
 		
 		real_IPAddress = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
@@ -182,6 +191,7 @@ class GetModules2_Meta(Resource):
 				return "ERROR: Invalid Request - bad IP"
 			
 class GetKey_Meta(Resource):
+#This returns an activation key given a store code and serial number.  It calls get_askey to actually call the server.
 	def get(self,store_code, serialNumber, external_IPAddress, internal_IPAddress):
 		
 		real_IPAddress = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
@@ -240,6 +250,11 @@ class GetKey_Meta(Resource):
 		#return jsonify({'Data':myanswer[1]})
 		
 class SendModules_Meta(Resource):
+#This is the opposite of many of the functions and actually takes data from a store via a POST request.  It then records
+# the modules the store reports in a 'ReportedModules' table.
+#
+# Aug 13, 2018 - Changed this to move data to the RequestLog DB rather than the LicenseKeyDB.
+#  This is because the CRM server may clobber data in the LicenseKeyDB when it moves that DB in every hour.
 		def post(self):
 			real_IPAddress = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
 			print ('-------------------\n New Request from: ' + real_IPAddress)	
@@ -247,7 +262,10 @@ class SendModules_Meta(Resource):
 			print ('    [--Start of Request Text--] \n' + str(request.data.decode('utf-8')) + '    [--End of Request Text--] \n')	
 			
 			#Connect to the databases
-			conn = e.connect()
+			# Aug 13, 2018 - Changed this to move data to the RequestLog DB rather than the LicenseKeyDB.
+			#  This is because the CRM server may clobber data in the LicenseKeyDB when it moves that DB in every hour.
+			#conn = e.connect()
+			conn = logDB.connect()
 			logconn = logDB.connect()
 			
 			
