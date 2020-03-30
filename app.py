@@ -59,7 +59,7 @@ class StoreCodes_Meta(Resource):
 		logconn = logDB.connect()
 		
 		#Restrict access to this function by detected (real) IP
-		if (real_IPAddress.startswith('10.10.') or real_IPAddress.startswith('127.0.0.1')):
+		if (real_IPAddress.startswith('10.10.') or real_IPAddress.startswith('172.16.') or real_IPAddress.startswith('127.0.0.1')):
 		
 			#perform query and return JSON data
 			query = conn.execute("Select distinct STORECODE from Modules")
@@ -93,7 +93,7 @@ class GetModules_Meta(Resource):
 		logconn = logDB.connect()
 		
 		#Restrict access to this function by (stated 'external') IP and detected (real) IP
-		if (external_IPAddress == '24.244.1.123') and (real_IPAddress.startswith('10.10.') or real_IPAddress.startswith('127.0.0.1')):		
+		if (external_IPAddress == '24.244.1.123') and (real_IPAddress.startswith('10.10.') or real_IPAddress.startswith('172.16.') or real_IPAddress.startswith('127.0.0.1')):		
 		
 			#Perform query and return JSON data
 			query = conn.execute("SELECT * FROM Modules WHERE StoreCode =?", (store_code.upper()))
@@ -115,7 +115,7 @@ class GetModules_Meta(Resource):
 			if (external_IPAddress != '24.244.1.123'):
 				return "ERROR: Invalid Request - bad external IP"
 			
-			if not (real_IPAddress.startswith('10.10.') or real_IPAddress.startswith('127.0.0.1')):
+			if not (real_IPAddress.startswith('10.10.') or real_IPAddress.startswith('172.16.') or real_IPAddress.startswith('127.0.0.1')):
 				return "ERROR: Invalid Request - bad IP"
 
 class GetModules2_Meta(Resource):
@@ -131,7 +131,7 @@ class GetModules2_Meta(Resource):
 		logconn = logDB.connect()
 
 		#Restrict access to this function by (stated 'external') IP and detected (real) IP
-		if (external_IPAddress == '24.244.1.123') and (real_IPAddress.startswith('10.10.') or real_IPAddress.startswith('127.0.0.1')):
+		if (external_IPAddress == '24.244.1.123') and (real_IPAddress.startswith('10.10.') or real_IPAddress.startswith('172.16.') or real_IPAddress.startswith('127.0.0.1')):
 			
 			#Perform query and return JSON data
 			query = conn.execute("SELECT * FROM Modules WHERE StoreCode =?", (store_code.upper()))
@@ -187,7 +187,7 @@ class GetModules2_Meta(Resource):
 			if (external_IPAddress != '24.244.1.123'):
 				return "ERROR: Invalid Request - bad external IP"
 			
-			if not (real_IPAddress.startswith('10.10.') or real_IPAddress.startswith('127.0.0.1')):
+			if not (real_IPAddress.startswith('10.10.') or real_IPAddress.startswith('172.16.') or real_IPAddress.startswith('127.0.0.1')):
 				return "ERROR: Invalid Request - bad IP"
 			
 class GetKey_Meta(Resource):
