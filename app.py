@@ -118,6 +118,39 @@ class GetModules_Meta(Resource):
 			if not (real_IPAddress.startswith('10.10.') or real_IPAddress.startswith('172.16.') or real_IPAddress.startswith('127.0.0.1')):
 				return "ERROR: Invalid Request - bad IP"
 
+class GetVar_Meta(Resource):
+#This returns a value of a VAR for a given store.  
+	def get(self,store_code, external_IPAddress, internal_IPAddress):
+		
+		real_IPAddress = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+		print ('-------------------\n New Request from: ' + real_IPAddress)
+		
+		#Connect to the databases
+		conn = e.connect()
+		logconn = logDB.connect()
+				
+		#Perform query and return JSON data
+		query = conn.execute("SELECT * FROM Reseller WHERE StoreCode =?", (store_code.upper()))
+
+		queryResult = query.cursor.fetchall()[0]
+		#queryResult = (query.fetchone())
+		
+		#Make sure that a valid row in the DB exists.
+		if str(queryResult) == 'None':
+			#Invalid store code, log the error and return 'Invalid Store Code'			
+			print ('Error, supplied store_code ' + store_code.upper() + ' did not match any records')
+			return ('ERROR:Invalid Store Code')
+		else:
+			print ('Returned data was ' + str(queryResult) )
+		
+		#Before we return the request, log the request and the result.
+		now = datetime.datetime.now()
+		requestType = 'GetVar'
+		query = logconn.execute("INSERT INTO RequestLog(DateTime, RequestType, StoreCode, ExternalIPAddress, InternalIPAddress, RealIPAddress) VALUES(?,?,?,?,?,?)", (now, requestType, store_code.upper(), external_IPAddress, internal_IPAddress, real_IPAddress))
+			
+		return jsonify({'Data': queryResult})
+
+
 class GetModules2_Meta(Resource):
 #This returns a formatted list of what modules are turned on for a given store.  It is similar in nature to GetModules
 # but formats the data in an easier to use format. 
@@ -334,6 +367,7 @@ api.add_resource(StoreCodes_Meta, '/starplus/api/v1.0/storecodes')
 api.add_resource(GetModules_Meta, '/starplus/api/v1.0/getmodules/<string:store_code>/<string:external_IPAddress>/<string:internal_IPAddress>')
 api.add_resource(GetModules2_Meta, '/starplus/api/v2.0/getmodules/<string:store_code>/<string:external_IPAddress>/<string:internal_IPAddress>')
 api.add_resource(GetKey_Meta, '/starplus/api/v1.0/getkey/<string:store_code>/<string:serialNumber>/<string:external_IPAddress>/<string:internal_IPAddress>')
+api.add_resource(GetVar_Meta, '/starplus/api/v1.0/getvar/<string:store_code>/<string:external_IPAddress>/<string:internal_IPAddress>')
 api.add_resource(SendModules_Meta, '/starplus/api/v1.0/sendmodules')
 
 if __name__ == '__main__':
