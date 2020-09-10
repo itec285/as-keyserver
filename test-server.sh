@@ -17,9 +17,8 @@ echo \##########TESTING GETKEY######################################
 curl -i http://localhost:5000/starplus/api/v1.0/getkey/test99/7777/24.244.1.123/10.10.1.1
 echo \##############################################################
 
-echo
 echo \##########TESTING GETVAR######################################
-curl -i http://localhost:5000/starplus/api/v1.0/getvar/test99/24.244.1.123/10.10.1.1
+curl -i http://localhost:5000/starplus/api/v1.0/getvar/test99
 echo \##############################################################
 
 echo \##########TESTING SENDMODULES#################################
