@@ -229,6 +229,82 @@ class GetModules2_Meta(Resource):
 			
 			if not (real_IPAddress.startswith('10.10.') or real_IPAddress.startswith('172.16.') or real_IPAddress.startswith('127.0.0.1')):
 				return "ERROR: Invalid Request - bad IP"
+
+class GetModules3_Meta(Resource):
+#This returns a formatted list of what modules are turned on for a given store.  It is similar in nature to GetModules2
+# but adds a till and workstation count at the end. 
+	def get(self,store_code, external_IPAddress, internal_IPAddress):
+		
+		real_IPAddress = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+		print ('-------------------\n New Request from: ' + real_IPAddress)
+		
+		#Connect to the databases
+		conn = e.connect()
+		logconn = logDB.connect()
+
+		#Restrict access to this function by (stated 'external') IP and detected (real) IP
+		if (external_IPAddress == '24.244.1.123') and (real_IPAddress.startswith('10.10.') or real_IPAddress.startswith('172.16.') or real_IPAddress.startswith('127.0.0.1')):
+			
+			#Perform query and return JSON data
+			query = conn.execute("SELECT * FROM Modules WHERE StoreCode =?", (store_code.upper()))
+
+			#The above query will actually return a list of lists.  Return just the first list and put into the var result
+			queryresult = query.cursor.fetchall()[0]
+
+			#Start building the returnstring
+			returnString = "Storecode " + str(queryresult[1]) 
+			if (queryresult[2] == 1): returnString += ": Basic is on" 
+			if (queryresult[3] == 1): returnString += "| Star-Link Integration is on" 
+			if (queryresult[4] == 1): returnString += "| A/R is on" 
+			if (queryresult[5] == 1): returnString += "| Loyalty is on"
+			if (queryresult[6] == 1): returnString += "| Signs&Labels is on"
+			if (queryresult[7] == 1): returnString += "| AdvancedInvControl is on"
+			if (queryresult[8] == 1): returnString += "| Scientific is on"
+			if (queryresult[9] == 1): returnString += "| Purchasing&Receiving is on"
+			if (queryresult[10] == 1): returnString += "| Multi-Store is on"
+			if (queryresult[11] == 1): returnString += "| Wireless is on"
+			if (queryresult[12] == 1): returnString += "| Replenishment is on"
+			if (queryresult[13] == 1): returnString += "| OrderDesk is on"
+			if (queryresult[14] == 1): returnString += "| Delivery is on"
+			if (queryresult[15] == 1): returnString += "| AdvancedSigCap is on"
+			if (queryresult[16] == 1): returnString += "| Accounting is on"
+			if (queryresult[17] == 1): returnString += "| InterStoreTransfer is on"
+			if (queryresult[18] == 1): returnString += "| Fingerprint is on"
+			if (queryresult[19] == 1): returnString += "| GasPump is on"
+			if (queryresult[20] == 1): returnString += "| PDALineBusting is on"
+			if (queryresult[21] == 1): returnString += "| Inactive is on"
+			if (queryresult[22] == 1): returnString += "| Inactive is on"
+			if (queryresult[23] == 1): returnString += "| Inactive is on"
+			if (queryresult[24] == 1): returnString += "| AdvancedGWP is on"
+			if (queryresult[25] == 1): returnString += "| Rentals is on"
+			if (queryresult[26] == 1): returnString += "| Kiosk is on"
+			if (queryresult[27] == 1): returnString += "| Dashboard is on"
+			returnString += "| Total number of clients: " + str(queryresult[28]) + ". Includes a 'fudge' factor of 3 and one till/workstation each for the basic package. So all stores start at 5 plus any additional tills and workstations.  Base store + 1 till = 6." 
+			returnString += "| Total number of tills: " + str(queryresult[29]) 
+			returnString += "| Total number of workstations: " + str(queryresult[30]) 
+			
+
+			#Before we return the request, log the request and the result.
+			now = datetime.datetime.now()
+			requestType = 'GetModules2'
+			query = logconn.execute("INSERT INTO RequestLog(DateTime, RequestType, StoreCode, ExternalIPAddress, InternalIPAddress, RealIPAddress) VALUES(?,?,?,?,?,?)", (now, requestType, store_code.upper(), external_IPAddress, internal_IPAddress, real_IPAddress))
+			
+			#If they've made it here, it was a valid request.  Return the full returnString we just built.
+			return returnString
+			#return jsonify({'Data': returnString})
+		else:
+			#Before we return the request, log the request and the result.
+			now = datetime.datetime.now()
+			requestType = 'GetModules2'
+			query = logconn.execute("INSERT INTO RequestLog(DateTime, RequestType, StoreCode, ExternalIPAddress, InternalIPAddress, RealIPAddress) VALUES(?,?,?,?,?,?)", (now, requestType, store_code.upper(), external_IPAddress, internal_IPAddress, real_IPAddress))
+			
+			#If we're in this section, the request was invalid due to wrong external IP or detected (real) IP.  Return an error code.		
+			if (external_IPAddress != '24.244.1.123'):
+				return "ERROR: Invalid Request - bad external IP"
+			
+			if not (real_IPAddress.startswith('10.10.') or real_IPAddress.startswith('172.16.') or real_IPAddress.startswith('127.0.0.1')):
+				return "ERROR: Invalid Request - bad IP"
+
 			
 class GetKey_Meta(Resource):
 #This returns an activation key given a store code and serial number.  It calls get_askey to actually call the server.
@@ -373,6 +449,7 @@ class SendModules_Meta(Resource):
 api.add_resource(StoreCodes_Meta, '/starplus/api/v1.0/storecodes')
 api.add_resource(GetModules_Meta, '/starplus/api/v1.0/getmodules/<string:store_code>/<string:external_IPAddress>/<string:internal_IPAddress>')
 api.add_resource(GetModules2_Meta, '/starplus/api/v2.0/getmodules/<string:store_code>/<string:external_IPAddress>/<string:internal_IPAddress>')
+api.add_resource(GetModules3_Meta, '/starplus/api/v3.0/getmodules/<string:store_code>/<string:external_IPAddress>/<string:internal_IPAddress>')
 api.add_resource(GetKey_Meta, '/starplus/api/v1.0/getkey/<string:store_code>/<string:serialNumber>/<string:external_IPAddress>/<string:internal_IPAddress>')
 api.add_resource(GetVar_Meta, '/starplus/api/v1.0/getvar/<string:store_code>')
 api.add_resource(SendModules_Meta, '/starplus/api/v1.0/sendmodules')
