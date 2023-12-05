@@ -7,7 +7,7 @@ from json import dumps
 import datetime, socket
 import sys
 
-#Create an engine for connecting to SQLIte3, assuming it is in the local folder.
+#Create an engine for connecting to SQLIte3, assuming it is in the local folder
 e = create_engine('sqlite:///licenseKey.db')
 logDB = create_engine('sqlite:///requestLog.db')
 
@@ -137,8 +137,9 @@ class GetVar_Meta(Resource):
 			queryResult = query.cursor.fetchall()[0]
 			#print (str(queryResult))
 		except IndexError:
-			print('\n Error - query of VAR failed. \n\n')
-			return ('Error: invalid store')
+			print('\n Error - query of VAR failed. Returning "DIRECT"  \n\n')
+			#return ('Error: invalid store')
+			queryResult = [9999, store_code.upper(), 'DIRECT']
 		
 		#Format the data in a way Blake likes.  This is the cheap way to do it, but fastest since we know the order..
 		returnDict = {
