@@ -7,7 +7,7 @@ from json import dumps
 import datetime, socket
 import sys
 
-#Create an engine for connecting to SQLIte3, assuming it is in the local folder
+#Create an engine for connecting to SQLIte3, assuming it is in the local folder.
 e = create_engine('sqlite:///licenseKey.db')
 logDB = create_engine('sqlite:///requestLog.db')
 
